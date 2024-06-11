@@ -101,6 +101,10 @@ class ScannedBarcodeActivity : AppCompatActivity() {
         }
     }
 
+    private fun decodeInformation(pesel: String) {
+        pesel.toInt()
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
@@ -109,7 +113,9 @@ class ScannedBarcodeActivity : AppCompatActivity() {
                 Toast.makeText(this, "Scan cancelled", Toast.LENGTH_LONG).show()
                 finish()
             } else {
-                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
+                val temp = result.contents
+                decodeInformation(temp)
+                Toast.makeText(this, "Scanned: " + temp, Toast.LENGTH_LONG).show()
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
