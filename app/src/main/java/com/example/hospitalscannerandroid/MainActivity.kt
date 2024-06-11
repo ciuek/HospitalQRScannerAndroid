@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                 .build()
 
             val request = Request.Builder()
-                .url("http://10.0.2.2:8000/token")
+                .url("http://87.206.144.236:8000/token")
                 .post(requestBody)
                 .build()
 

@@ -82,7 +82,7 @@ class ScannedBarcodeActivity : AppCompatActivity() {
                 // Wykonanie żądania do API
                 val client = OkHttpClient()
                 val request = Request.Builder()
-                    .url("http://10.0.2.2:8000/patient/$scannedId")
+                    .url("http://87.206.144.236:8000/patient/$scannedId")
                     .addHeader("Authorization", "Bearer $token")
                     .build()
 
