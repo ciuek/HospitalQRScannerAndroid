@@ -74,4 +74,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("com.journeyapps:zxing-android-embedded:4.1.0")
     implementation("com.google.zxing:core:3.3.3")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("com.google.code.gson:gson:2.8.6")
 }

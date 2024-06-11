@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.zxing.integration.android.IntentIntegrator
+import com.google.gson.Gson
+import okhttp3.*
+import java.io.IOException
 
 
 class ScannedBarcodeActivity : AppCompatActivity() {
@@ -26,44 +29,6 @@ class ScannedBarcodeActivity : AppCompatActivity() {
         } else {
             initQRCodeScanner()
         }
-        val cat = Cat(
-            name = "Kot",
-            age = 5,
-            pesel = "0002265",
-            medical_history = listOf(
-                MedicalEvent("1999-02-01T11:13:43", "cos tam sie stalo xds"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-                MedicalEvent("2000-07-06T21:37:00", "cos gorszego"),
-            )
-        )
-
-        // Ustawienie danych w widokach
-        val tvName = findViewById<TextView>(R.id.tvName)
-        val tvAge = findViewById<TextView>(R.id.tvAge)
-        val tvPesel = findViewById<TextView>(R.id.tvPesel)
-        val lvMedicalHistory = findViewById<ListView>(R.id.lvMedicalHistory)
-
-        tvName.text = "Imię i nazwisko: " + cat.name
-        tvAge.text = "Wiek: " + cat.age.toString()
-        tvPesel.text = "PESEL: " + cat.pesel
-
-        // Utworzenie adaptera dla ListView
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1, cat.medical_history.map {
-            "${it.event_date} - ${it.event_description}"
-        })
-        lvMedicalHistory.adapter = adapter
     }
 
     data class MedicalEvent(
@@ -109,7 +74,52 @@ class ScannedBarcodeActivity : AppCompatActivity() {
                 Toast.makeText(this, "Scan cancelled", Toast.LENGTH_LONG).show()
                 finish()
             } else {
-                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
+                val scannedId = result.contents
+
+                // Pobranie tokenu z Intent
+                val token = intent.getStringExtra("token")
+
+                // Wykonanie żądania do API
+                val client = OkHttpClient()
+                val request = Request.Builder()
+                    .url("http://10.0.2.2:8000/patient/$scannedId")
+                    .addHeader("Authorization", "Bearer $token")
+                    .build()
+
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        runOnUiThread {
+                            Toast.makeText(this@ScannedBarcodeActivity, "Cos nie dziala", Toast.LENGTH_LONG).show()
+                        }
+                        finish()
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        response.use {
+                            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                            val gson = Gson()
+                            val cat = gson.fromJson(it.body?.charStream(), Cat::class.java)
+
+                            runOnUiThread {
+                                val tvName = findViewById<TextView>(R.id.tvName)
+                                val tvAge = findViewById<TextView>(R.id.tvAge)
+                                val tvPesel = findViewById<TextView>(R.id.tvPesel)
+                                val lvMedicalHistory = findViewById<ListView>(R.id.lvMedicalHistory)
+
+                                tvName.text = "Imię i nazwisko: " + cat.name
+                                tvAge.text = "Wiek: " + cat.age.toString()
+                                tvPesel.text = "PESEL: " + cat.pesel
+
+                                // Utworzenie adaptera dla ListView
+                                val adapter = ArrayAdapter(this@ScannedBarcodeActivity, android.R.layout.simple_list_item_2, android.R.id.text1, cat.medical_history.map {
+                                    "${it.event_date} - ${it.event_description}"
+                                })
+                                lvMedicalHistory.adapter = adapter
+                            }
+                        }
+                    }
+                })
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
