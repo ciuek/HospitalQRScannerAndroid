@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         initViews()
     }
 
-    data class TokenResponse(val token: String)
+    data class TokenResponse(val access_token: String)
 
     private fun initViews() {
         val btnScanBarcode = findViewById<Button>(R.id.btnScanBarcode)
@@ -53,12 +53,13 @@ class MainActivity : ComponentActivity() {
                 .build()
 
             val request = Request.Builder()
-                .url("http://localhost:8000/token")
+                .url("http://10.0.2.2:8000/token")
                 .post(requestBody)
                 .build()
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    e.printStackTrace()
                     runOnUiThread {
                         Toast.makeText(this@MainActivity, "Logowanie nie powiodło się", Toast.LENGTH_LONG).show()
                     }
@@ -66,7 +67,16 @@ class MainActivity : ComponentActivity() {
 
                 override fun onResponse(call: Call, response: Response) {
                     response.use {
-                        if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                        if (!response.isSuccessful) {
+                            runOnUiThread {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Logowanie nie powiodło się",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            throw IOException("Unexpected code $response")
+                        }
 
                         // Pobranie tokenu z odpowiedzi
                         val responseBody = response.body?.string()
@@ -74,7 +84,7 @@ class MainActivity : ComponentActivity() {
                         val tokenResponse = gson.fromJson(responseBody, TokenResponse::class.java)
 
                         // Przechowanie tokenu
-                        token = tokenResponse.token
+                        token = tokenResponse.access_token
 
                         runOnUiThread {
                             Toast.makeText(this@MainActivity, "Zalogowano pomyślnie", Toast.LENGTH_LONG).show()
