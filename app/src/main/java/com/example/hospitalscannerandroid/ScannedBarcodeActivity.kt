@@ -89,15 +89,26 @@ class ScannedBarcodeActivity : AppCompatActivity() {
                 client.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
                         runOnUiThread {
-                            Toast.makeText(this@ScannedBarcodeActivity, "Cos nie dziala", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@ScannedBarcodeActivity, "Nie połączono z serwerem", Toast.LENGTH_LONG).show()
                         }
                         finish()
                     }
 
                     override fun onResponse(call: Call, response: Response) {
                         response.use {
-                            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                            if (!response.isSuccessful) {
+                                runOnUiThread {
+                                    val tvName = findViewById<TextView>(R.id.tvName)
+                                    val tvAge = findViewById<TextView>(R.id.tvAge)
+                                    val tvPesel = findViewById<TextView>(R.id.tvPesel)
 
+                                    tvName.text = "Nie znaleziono pacjenta o danym ID"
+                                    tvAge.text = ""
+                                    tvPesel.text = ""
+                                }
+                                throw IOException("Unexpected code $response")
+                                finish()
+                            }
                             val gson = Gson()
                             val cat = gson.fromJson(it.body?.charStream(), Cat::class.java)
 
@@ -111,7 +122,6 @@ class ScannedBarcodeActivity : AppCompatActivity() {
                                 tvAge.text = "Wiek: " + cat.age.toString()
                                 tvPesel.text = "PESEL: " + cat.pesel
 
-                                // Utworzenie adaptera dla ListView
                                 val adapter = ArrayAdapter(this@ScannedBarcodeActivity, android.R.layout.simple_list_item_2, android.R.id.text1, cat.medical_history.map {
                                     "${it.event_date} - ${it.event_description}"
                                 })
