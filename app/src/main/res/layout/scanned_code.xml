@@ -7,17 +7,29 @@
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:typeface="normal"
+        android:text="Imię i nazwisko: "/>
 
     <TextView
         android:id="@+id/tvAge"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:typeface="normal"
+        android:text="Wiek: "/>
 
     <TextView
         android:id="@+id/tvPesel"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:typeface="normal"
+        android:text="PESEL: "/>
 
     <ListView
         android:id="@+id/lvMedicalHistory"

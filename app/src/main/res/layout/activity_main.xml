@@ -5,11 +5,19 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:src="@drawable/logo"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp" />
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Login"
+        android:layout_marginTop="16dp"
         android:inputType="text" />
 
     <EditText
@@ -17,18 +25,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Hasło"
+        android:layout_marginTop="16dp"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Zaloguj" />
 
     <Button
         android:id="@+id/btnScanBarcode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Skanuj kod QR" />
 
 </LinearLayout>
