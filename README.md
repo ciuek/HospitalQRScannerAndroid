@@ -1,1 +1,1 @@
-Aby zadziałało odbieranie danych, należy wprowadzić IP własnego serwera (najlepiej publiczne), bądź przy używaniu wirtualnego urządzenia podać IP 10.0.2.2, które będzie służyć jako localhost. Należy zastąpić je w 3 plikach, czyli MainActivity.kt, ScannedBarcodeActivity.kt, oraz data_extraction_rules.xml.
+Simple mobile client for Hospital Scanner project. It allowes user to login and scan QR codes with patients IDs. App shows medical records provided by [a server](https://github.com/ciuek/HospitalScannerServer).
